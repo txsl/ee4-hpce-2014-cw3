@@ -64,12 +64,25 @@ protected:
         }else if (n == 2){
             pOut[0] = pIn[0]+pIn[sIn];
             pOut[sOut] = pIn[0]-pIn[sIn];
-        }else if (n <= K){
+        }else{ 
+            size_t m = n/2;
+            
+            if (n <= K){
             // printf("less than K, so not task grouping. n=%i\n", n);
-            size_t m = n/2;
+                
 
-            forwards_impl(m,wn*wn,pIn,2*sIn,pOut,sOut);
-            forwards_impl(m,wn*wn,pIn+sIn,2*sIn,pOut+sOut*m,sOut);
+                forwards_impl(m,wn*wn,pIn,2*sIn,pOut,sOut);
+                forwards_impl(m,wn*wn,pIn+sIn,2*sIn,pOut+sOut*m,sOut);
+            }else{
+                // size_t m = n/2;
+
+                tbb::task_group group;
+
+                group.run( [&]() {forwards_impl(m,wn*wn,pIn,2*sIn,pOut,sOut);} );
+                group.run( [&]() {forwards_impl(m,wn*wn,pIn+sIn,2*sIn,pOut+sOut*m,sOut);} );
+
+                group.wait();
+            }
 
             std::complex<double> w=std::complex<double>(1.0, 0.0);
 
@@ -81,27 +94,19 @@ protected:
               w = w*wn;
             }
 
-        }else{
-            // printf("greater than K, so task grouping. n=%i\n", n);
-            size_t m = n/2;
+            // std::complex<double> w=std::complex<double>(1.0, 0.0);
 
-            tbb::task_group group;
+            // for (size_t j=0;j<m;j++){
+            //   std::complex<double> t1 = w*pOut[m+j];
+            //   std::complex<double> t2 = pOut[j]-t1;
+            //   pOut[j] = pOut[j]+t1;                 /*  pOut[j] = pOut[j] + w^i pOut[m+j] */
+            //   pOut[j+m] = t2;                          /*  pOut[j] = pOut[j] - w^i pOut[m+j] */
+            //   w = w*wn;
+            // }
 
-            group.run( [&]() {forwards_impl(m,wn*wn,pIn,2*sIn,pOut,sOut);} );
-            group.run( [&]() {forwards_impl(m,wn*wn,pIn+sIn,2*sIn,pOut+sOut*m,sOut);} );
-
-            group.wait();
-             
-            std::complex<double> w=std::complex<double>(1.0, 0.0);
-
-            for (size_t j=0;j<m;j++){
-              std::complex<double> t1 = w*pOut[m+j];
-              std::complex<double> t2 = pOut[j]-t1;
-              pOut[j] = pOut[j]+t1;                 /*  pOut[j] = pOut[j] + w^i pOut[m+j] */
-              pOut[j+m] = t2;                          /*  pOut[j] = pOut[j] - w^i pOut[m+j] */
-              w = w*wn;
-            }
         }
+
+
     }
     
     virtual void backwards_impl(

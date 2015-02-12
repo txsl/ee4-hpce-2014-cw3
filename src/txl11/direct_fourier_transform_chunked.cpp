@@ -57,17 +57,6 @@ protected:
         
         // = -i*2*pi / n
         complex_t neg_im_2pi_n=-complex_t(0.0, 1.0)*2.0*PI / (double)n;
-        
-        auto f_l_impl = [=](size_t kk){
-            complex_t acc=0;
-            for(size_t ii=0;ii<n;ii++){
-                // acc += exp(-i * 2 * pi * kk / n);
-                acc+=pIn[ii*sIn] * exp( neg_im_2pi_n * (double)kk * (double)ii );
-            }
-
-            pOut[kk*sOut]=acc;
-        };
-
 
         unsigned K = get_chunk_size();
 
@@ -76,7 +65,7 @@ protected:
 
         my_range_t range(0, n, K);
 
-        auto f = [&](const my_range_t &chunk){
+        auto f = [=](const my_range_t &chunk){
             for(unsigned kk=chunk.begin(); kk!=chunk.end(); kk++ ){
                 complex_t acc=0;
 
@@ -100,6 +89,8 @@ protected:
     {
         assert(n>0);
         
+        // unsigned K = get_chunk_size();
+
         const double PI=3.1415926535897932384626433832795;
         
         // = i*2*pi / n
@@ -107,16 +98,26 @@ protected:
         
         const double scale=1.0/n;
 
-        auto b_lambda_inner = [=] (size_t kk){
-            complex_t acc=0;
-            for(size_t ii=0;ii<n;ii++){
-                // acc += exp(i * 2 * pi * kk / n);
-                acc+=pIn[ii*sIn] * exp( im_2pi_n * (double)kk * (double)ii );
-            }
-            pOut[kk*sOut]=acc*scale;
+        unsigned K = get_chunk_size();
+
+        typedef tbb::blocked_range<unsigned> my_range_t;
+
+        my_range_t range(0, n, K);
+
+        auto f = [=](const my_range_t &chunk){
+            for(unsigned kk=chunk.begin(); kk!=chunk.end(); kk++ ){
+                complex_t acc=0;
+
+                for(size_t ii=0;ii<n;ii++){
+                    // acc += exp(-i * 2 * pi * kk / n);
+                    acc+=pIn[ii*sIn] * exp( im_2pi_n * (double)kk * (double)ii );
+                }
+
+                pOut[kk*sOut]=acc*scale;
+                }
         };
 
-        tbb::parallel_for <size_t> (0, n, b_lambda_inner);
+        tbb::parallel_for (range, f, tbb::simple_partitioner());
     }
     
 public:

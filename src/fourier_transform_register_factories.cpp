@@ -14,6 +14,7 @@ namespace txl11{
 	std::shared_ptr<fourier_transform> Create_direct_fourier_transform_chunked();
 	std::shared_ptr<fourier_transform> Create_fast_fourier_transform_parfor();
 	std::shared_ptr<fourier_transform> Create_fast_fourier_transform_combined();
+	std::shared_ptr<fourier_transform> Create_fast_fourier_transform_opt();
 }
 
 
@@ -32,6 +33,7 @@ void fourier_transform::RegisterDefaultFactories()
 	RegisterTransformFactory("hpce.txl11.direct_fourier_transform_chunked", hpce::txl11::Create_direct_fourier_transform_chunked);
 	RegisterTransformFactory("hpce.txl11.fast_fourier_transform_parfor", hpce::txl11::Create_fast_fourier_transform_parfor);
 	RegisterTransformFactory("hpce.txl11.fast_fourier_transform_combined", hpce::txl11::Create_fast_fourier_transform_combined);
+	RegisterTransformFactory("hpce.txl11.fast_fourier_transform_opt", hpce::txl11::Create_fast_fourier_transform_opt);
 }
 	
 }; // namespace hpce
