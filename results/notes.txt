@@ -1,0 +1,11 @@
+Things I learnt from this:
+
+- In hindsight, I probably took too many datapoints squished too close together. Should have ranged K from 1 ~ 16k or further, with them spaced out more. Oh well, at least we have the data
+
+All benchmarks were conducted on ray*.doc.ic.ac.uk machines (cheaper than AWS!). Specs: http://www.doc.ic.ac.uk/csg/facilities/lab/workstations
+
+Observations:
+- In the FFT case, taskgroup is the clear winner (as mentioned in the cw spec). It seems to be the main performance enhancer, when compared to the parfor chunking (which does not seem particularly different from the base FFT case). See final_outlook.png
+- Number of CPU cores does have some difference, but not beyond 4 cores. This is explained as the processors are quad cores but run 8 theads. See cpu_comparisons.png
+- Taskgroup appears optimum at 4096. Makes sense since there is an overhead creating a new parallel worker, versus letting it iterate. See fft_taskgroup.png
+- Parfor appeared optimum for various lengths of n at 256. 4096 was impressively better in the long run, but suffered badly for short n. Even the 1 core example of K=256 did well, and this was the case for all K=256. They represent a good crossover with performance and low n and high n. See fft_parfor.png
