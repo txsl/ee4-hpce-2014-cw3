@@ -174,8 +174,26 @@ protected:
         forwards_impl(n, reverse_wn, pIn, sIn, pOut, sOut);
         
         double scale=1.0/n;
-        for(size_t i=0;i<n;i++){
-            pOut[i]=pOut[i]*scale;
+
+        unsigned K_chunk_size = get_chunk_size();
+
+        if(n >= K_chunk_size){
+            
+            typedef tbb::blocked_range<unsigned> my_range_t;
+            my_range_t range(0, n, K_chunk_size);
+
+            auto f = [&](const my_range_t &chunk){
+                for(size_t i=chunk.begin(); i != chunk.end(); i++){
+                    pOut[i]=pOut[i]*scale;
+                }
+            };
+
+            tbb::parallel_for (range, f, tbb::simple_partitioner());
+
+        }else{
+            for(size_t i=0;i<n;i++){
+                pOut[i]=pOut[i]*scale;
+            }            
         }
     }
     
