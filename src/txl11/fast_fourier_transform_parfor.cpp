@@ -43,11 +43,10 @@ protected:
         char *v=getenv("HPCE_FFT_LOOP_K");
         if(v==NULL){
            chunk_size = 16;
-            printf("HPCE_FFT_LOOP_K not set. Using a size of %i instead.\n", chunk_size);
-            
+            // printf("HPCE_FFT_LOOP_K not set. Using a size of %i instead.\n", chunk_size);
         }else{
            chunk_size = atoi(v);
-            printf("Using a chunk size of %i (set in the environment variable 'HPCE_FFT_LOOP_K'.\n)", chunk_size);
+            // printf("Using a chunk size of %i (set in the environment variable 'HPCE_FFT_LOOP_K'.\n)", chunk_size);
         }
         return chunk_size;
     }

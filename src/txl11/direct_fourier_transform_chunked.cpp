@@ -15,6 +15,9 @@ namespace txl11 {
 class direct_fourier_transform_chunked
     : public fourier_transform
 {
+private:
+    mutable unsigned chunk_size = 0;
+
 protected:
     /*! We can do any size transform */
     virtual size_t calc_padded_size(size_t n) const
@@ -22,24 +25,22 @@ protected:
         return n;
     }
 
-    virtual size_t get_chunk_size(size_t n) const
+    virtual size_t get_chunk_size(void) const
     {
-        unsigned chunk_size;
-        char *v=getenv("HPCE_DIRECT_OUTER_K");
+        // printf("In get_recursion_size. val is %i\n",chunk_size);
+        if (chunk_size != 0){
+            return chunk_size;
+        }
+
+        char *v=getenv("HPCE_FFT_LOOP_K");
         if(v==NULL){
-            chunk_size = 16;
-            printf("HPCE_DIRECT_OUTER_K not set. Using a size of %i instead.\n", chunk_size);
+           chunk_size = 16;
+            // printf("HPCE_FFT_LOOP_K not set. Using a size of %i instead.\n", chunk_size);
             
         }else{
-            chunk_size = atoi(v);
-            printf("Using a chunk size of %i (set in the environment variable 'HPCE_DIRECT_OUTER_K'.\n)", chunk_size);
+           chunk_size = atoi(v);
+            // printf("Using a chunk size of %i (set in the environment variable 'HPCE_FFT_LOOP_K'.\n)", chunk_size);
         }
-
-        if(chunk_size==0){
-            printf("You cannot have a chunk size of zero... Setting to default.\n");
-            chunk_size = 16;
-        }
-
         return chunk_size;
     }
 
@@ -68,7 +69,7 @@ protected:
         };
 
 
-        unsigned K = get_chunk_size(n);
+        unsigned K = get_chunk_size();
 
         // As used in an example in the coursework spec
         typedef tbb::blocked_range<unsigned> my_range_t;

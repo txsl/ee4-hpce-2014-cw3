@@ -40,11 +40,11 @@ protected:
         char *v=getenv("HPCE_FFT_RECURSION_K");
         if(v==NULL){
             recursion_size = 16;
-            printf("HPCE_FFT_RECURSION_K not set. Using a size of %i instead.\n", recursion_size);
+            // printf("HPCE_FFT_RECURSION_K not set. Using a size of %i instead.\n", recursion_size);
             
         }else{
             recursion_size = atoi(v);
-            printf("Using a chunk size of %i (set in the environment variable 'HPCE_FFT_RECURSION_K'.\n)", recursion_size);
+            // printf("Using a chunk size of %i (set in the environment variable 'HPCE_FFT_RECURSION_K'.\n)", recursion_size);
         }
         return recursion_size;
     }
