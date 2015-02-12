@@ -90,6 +90,24 @@ protected:
             pOut[0] = pIn[0]+pIn[sIn];
             pOut[sOut] = pIn[0]-pIn[sIn];
         }else if (n == 4){
+            pOut[0] = pIn[0]+pIn[2*sIn];
+            pOut[sOut] = pIn[0]-pIn[2*sIn];
+            (pOut+sOut*2)[0] = (pIn+sIn)[0] + (pIn+sIn)[2*sIn];
+            (pOut+sOut*2)[sOut] = (pIn+sIn)[0] - (pIn+sIn)[2*sIn];
+ 
+            std::complex<double> w=std::complex<double>(1.0, 0.0);
+            
+            std::complex<double> t1 = w*pOut[2];
+            std::complex<double> t2 = pOut[0]-t1;
+            pOut[0] = pOut[0]+t1;                 /*  pOut[j] = pOut[j] + w^i pOut[m+j] */
+            pOut[2] = t2;                          /*  pOut[j] = pOut[j] - w^i pOut[m+j] */
+            w = w*wn;            
+
+            t1 = w*pOut[3];
+            t2 = pOut[1]-t1;
+            pOut[1] = pOut[1]+t1;                 /*  pOut[j] = pOut[j] + w^i pOut[m+j] */
+            pOut[3] = t2;                          /*  pOut[j] = pOut[j] - w^i pOut[m+j] */
+            w = w*wn;
             
         }else{
             size_t m = n/2;
@@ -103,8 +121,8 @@ protected:
 
                 tbb::task_group group;
 
-                group.run( [&]() {forwards_impl(m,wn*wn,pIn,2*sIn,pOut,sOut);} );
-                group.run( [&]() {forwards_impl(m,wn*wn,pIn+sIn,2*sIn,pOut+sOut*m,sOut);} );
+                group.run( [&]() {forwards_impl(m, wn*wn, pIn, 2*sIn, pOut, sOut);} );
+                group.run( [&]() {forwards_impl(m, wn*wn, pIn+sIn, 2*sIn, pOut+sOut*m, sOut);} );
 
                 group.wait();
             }
