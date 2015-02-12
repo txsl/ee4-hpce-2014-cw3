@@ -89,7 +89,7 @@ protected:
 
                 my_range_t range(0, m, K);
 
-                auto f = [&](const my_range_t &chunk){
+                auto f = [=](const my_range_t &chunk){
                     for (size_t j=chunk.begin(); j!=chunk.end(); j++){
                         std::complex<double> w_local = std::complex<double>(1.0, 0.0);
                         w_local = pow(wn, j);
