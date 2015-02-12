@@ -10,7 +10,8 @@ for procs in $CORES; do
     for val in $K; do
         # echo $K;
         export HPCE_DIRECT_OUTER_K=$val;
-        fname="ft_chunked_K_${val}_P_${procs}"
+        fname="ft_chunked_K_${val}_P_${procs}";
+        echo "Running ${fname}";
         ./bin/time_fourier_transform hpce.txl11.direct_fourier_transform_chunked $procs 60 > test/$fname.csv 2> test/error/$fname.log
     done
 done
@@ -20,6 +21,7 @@ done
 for procs in $CORES; do
     for val in $K; do
         fname="fft_taskgroup_K_${val}_P_${procs}"
+        echo "Running ${fname}";
         export HPCE_FFT_RECURSION_K=$val;
         ./bin/time_fourier_transform hpce.txl11.fast_fourier_transform_taskgroup $procs 60 > test/$fname.csv 2> test/error/$fname.log
     done
@@ -30,6 +32,7 @@ done
 for procs in $CORES; do
     for val in $K; do
         fname="fft_parfor_K_${val}_P_${procs}"
+        echo "Running ${fname}";
         export HPCE_FFT_LOOP_K=$val;
         ./bin/time_fourier_transform hpce.txl11.fast_fourier_transform_parfor $procs 60 > test/$fname.csv 2> test/error/$fname.log
     done
@@ -41,6 +44,7 @@ for procs in $CORES; do
     for val in $K; do
         for innerval in $K; do
             fname="fft_combined_REC_K_${val}_LOOP_K_${innerval}_P_${procs}"
+            echo "Running ${fname}";
             export HPCE_FFT_RECURSION_K=$val;
             export HPCE_FFT_LOOP_K=$innerval;
             ./bin/time_fourier_transform hpce.txl11.fast_fourier_transform_parfor $procs 60 > test/fname.csv 2> test/error/fname.log
