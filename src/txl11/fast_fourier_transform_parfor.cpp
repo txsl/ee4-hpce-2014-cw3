@@ -42,7 +42,8 @@ protected:
 
         char *v=getenv("HPCE_FFT_LOOP_K");
         if(v==NULL){
-           chunk_size = 16;
+           chunk_size = 4096;
+           // see results directory for discussion
             // printf("HPCE_FFT_LOOP_K not set. Using a size of %i instead.\n", chunk_size);
         }else{
            chunk_size = atoi(v);
