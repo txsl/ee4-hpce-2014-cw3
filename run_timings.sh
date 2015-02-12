@@ -47,7 +47,7 @@ for procs in $CORES; do
             echo "Running ${fname}";
             export HPCE_FFT_RECURSION_K=$val;
             export HPCE_FFT_LOOP_K=$innerval;
-            ./bin/time_fourier_transform hpce.txl11.fast_fourier_transform_parfor $procs 60 > test/fname.csv 2> test/error/fname.log
+            ./bin/time_fourier_transform hpce.txl11.fast_fourier_transform_combined $procs 60 > test/$fname.csv 2> test/error/$fname.log
         done
     done
 done
