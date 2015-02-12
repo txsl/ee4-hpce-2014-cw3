@@ -90,14 +90,16 @@ protected:
                 my_range_t range(0, m, K);
 
                 auto f = [=](const my_range_t &chunk){
-                    for (size_t j=chunk.begin(); j!=chunk.end(); j++){
-                        std::complex<double> w_local = std::complex<double>(1.0, 0.0);
-                        w_local = pow(wn, j);
-
+                    
+                    std::complex<double> w_local = std::complex<double>(1.0, 0.0);
+                    w_local = pow(wn, chunk.begin());
+                    
+                    for (size_t j=chunk.begin(); j!=chunk.end(); j++){    
                         std::complex<double> t1 = w_local*pOut[m+j];
                         std::complex<double> t2 = pOut[j]-t1;
                         pOut[j] = pOut[j]+t1;                 /*  pOut[j] = pOut[j] + w^i pOut[m+j] */
                         pOut[j+m] = t2;                          /*  pOut[j] = pOut[j] - w^i pOut[m+j] */
+                        w_local = w_local*wn;
                     }
                 };
 
